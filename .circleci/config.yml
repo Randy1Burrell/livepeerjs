@@ -46,14 +46,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Change directory
+          name: Build explorer
           command: |
             cd packages/explorer
             ls -la
-
-      - run:
-          name: Build explorer
-          command: |
             yarn build
 
   deploy-explorer:
