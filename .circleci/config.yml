@@ -76,14 +76,14 @@ workflows:
     jobs:
       - build
       - build-explorer:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+        requires:
+          - build
+        filters:
+          branches:
+            only: master
       - deploy-explorer:
-          requires:
-            - build-explorer
-          filters:
-            branches:
-              only: master
+        requires:
+          - build-explorer
+        filters:
+          branches:
+            only: master
