@@ -38,7 +38,7 @@ jobs:
             yarn coverage
             ./cc-test-reporter after-build
 
-  build_explorer:
+  build-explorer:
     docker:
       - image: circleci/node:8.11
     working_directory: ~/repo
@@ -55,7 +55,7 @@ jobs:
         command: |
           yarn build
 
-  deploy_explorer:
+  deploy-explorer:
     docker:
       - image: circleci/python:2.7-jessie
     working_directory: ~/repo
@@ -75,15 +75,15 @@ workflows:
   test-build-deploy:
     jobs:
       - build
-      - build_explorer:
+      - build-explorer:
           requires:
             - build
           filters:
             branches:
               only: master
-      - deploy_explorer:
+      - deploy-explorer:
           requires:
-            - build_explorer
+            - build-explorer
           filters:
             branches:
               only: master
