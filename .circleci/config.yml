@@ -38,5 +38,51 @@ jobs:
             yarn coverage
             ./cc-test-reporter after-build
 
+  build_explorer:
+    docker:
+      - image: circleci/node:8.11
+    working_directory: ~/repo
 
+    steps:
+      - checkout
+      - run:
+        name: Change directory
+        command: |
+          cd packages/explorer
 
+      - run:
+        name: Build explorer
+        command: |
+          yarn build
+
+  deploy_explorer:
+    docker:
+      - image: circleci/python:2.7-jessie
+    working_directory: ~/repo
+
+    steps:
+      - run:
+        name: Install awscli
+        command: sudo pip install awscli
+
+      - run:
+        name: Deploy to S3
+        command: aws s3 sync packages/explorer/build s3://staging-livepeer-deployment --delete
+
+workflows:
+  version: 2
+  test-build-deploy:
+    jobs:
+      - build
+      - build_explorer:
+        requires:
+          - build
+        filters:
+          branches:
+            only: master
+      - deploy_explorer:
+        requires:
+          - build_explorer
+        filters:
+          branches:
+            only: master
