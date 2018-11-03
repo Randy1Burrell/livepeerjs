@@ -53,6 +53,11 @@ jobs:
       - run:
           name: Build explorer
           command: |
+            ls -la
+
+      - run:
+          name: Build explorer
+          command: |
             yarn build
 
   deploy-explorer:
