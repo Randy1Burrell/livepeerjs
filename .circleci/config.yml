@@ -49,10 +49,6 @@ jobs:
           name: Change directory
           command: |
             cd packages/explorer
-
-      - run:
-          name: Build explorer
-          command: |
             ls -la
 
       - run:
