@@ -46,14 +46,14 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Change directory
-        command: |
-          cd packages/explorer
+          name: Change directory
+          command: |
+            cd packages/explorer
 
       - run:
-        name: Build explorer
-        command: |
-          yarn build
+          name: Build explorer
+          command: |
+            yarn build
 
   deploy-explorer:
     docker:
@@ -62,13 +62,13 @@ jobs:
 
     steps:
       - run:
-        name: Install awscli
-        command: sudo pip install awscli
+          name: Install awscli
+          command: sudo pip install awscli
 
       - run:
-        name: Deploy to S3
-        command: |
-          aws s3 sync packages/explorer/build s3://staging-livepeer-deployment --delete
+          name: Deploy to S3
+          command: |
+            aws s3 sync packages/explorer/build s3://staging-livepeer-deployment --delete
 
 workflows:
   version: 2
@@ -76,14 +76,14 @@ workflows:
     jobs:
       - build
       - build-explorer:
-        requires:
-          - build
-        filters:
-          branches:
-            only: master
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
       - deploy-explorer:
-        requires:
-          - build-explorer
-        filters:
-          branches:
-            only: master
+          requires:
+            - build-explorer
+          filters:
+            branches:
+              only: master
