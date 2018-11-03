@@ -51,6 +51,7 @@ jobs:
             yarn
             cd packages/explorer
             ls -la
+            export CI=false
             yarn build
 
   deploy-explorer:
