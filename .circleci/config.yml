@@ -67,7 +67,8 @@ jobs:
 
       - run:
         name: Deploy to S3
-        command: aws s3 sync packages/explorer/build s3://staging-livepeer-deployment --delete
+        command: |
+          aws s3 sync packages/explorer/build s3://staging-livepeer-deployment --delete
 
 workflows:
   version: 2
