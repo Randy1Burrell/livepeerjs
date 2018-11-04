@@ -41,7 +41,6 @@ jobs:
   build-explorer:
     docker:
       - image: circleci/node:8.11
-      - image: circleci/python:2.7-jessie
     working_directory: ~/repo
 
     steps:
@@ -55,6 +54,21 @@ jobs:
             export CI=false
             yarn build
 
+      - save_cache:
+          paths:
+            - packages/explorer/build
+          key: built-explorer
+
+  deploy-explorer:
+    docker:
+      - image: circleci/python:2.7-jessie
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - built-explorer
       - run:
           name: Install awscli
           command: sudo pip install awscli
