@@ -89,3 +89,9 @@ workflows:
           filters:
             branches:
               only: master
+      - deploy-explorer:
+          requires:
+            - build-explorer
+          filters:
+            branches:
+              only: master
