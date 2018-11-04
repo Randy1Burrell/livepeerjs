@@ -76,7 +76,9 @@ jobs:
       - run:
           name: Deploy to S3
           command: |
-            aws s3 sync packages/explorer/build s3://staging-livepeer-deployment --delete
+            aws s3 sync packages/explorer/build s3://staging-livepeer-deployment \
+            --delete \
+            --grants read=http://staging-livepeer-deployment.s3-website.us-east-1.amazonaws.com/
 
 workflows:
   version: 2
@@ -91,7 +93,7 @@ workflows:
               only: master
       - deploy-explorer:
           requires:
-            - build-explorer
+            - build
           filters:
             branches:
               only: master
