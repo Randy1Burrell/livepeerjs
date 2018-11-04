@@ -93,7 +93,7 @@ workflows:
               only: master
       - deploy-explorer:
           requires:
-            - build
+            - build-explorer
           filters:
             branches:
               only: master
