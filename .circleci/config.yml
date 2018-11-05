@@ -79,7 +79,7 @@ jobs:
             aws s3 rm s3://staging-livepeer-deployment/ --recursive
             aws s3 sync packages/explorer/build s3://staging-livepeer-deployment \
             --delete \
-            --grants read=id=everyone
+            --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 
 workflows:
   version: 2
