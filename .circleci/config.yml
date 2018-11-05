@@ -77,7 +77,7 @@ jobs:
           name: Deploy to S3
           command: |
             aws s3 rm s3://staging-livepeer-deployment/ --recursive
-            aws s3 sync packages/explorer/build s3://$STAGING_BUCKET \
+            aws s3 sync packages/explorer/build s3://$STAGING_BUCKET_NAME \
             --delete \
             --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 
