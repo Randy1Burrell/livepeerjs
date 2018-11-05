@@ -29,7 +29,7 @@ const Landing = ({ history, ...props }) => (
           <InfoBox>
             <h2>
               <Icon use="explore" />&nbsp;
-              {`Explore Protocol `}
+              {`Explore Protocol Activity`}
             </h2>
             <p>
               The account view shows the recent Livepeer smart contract
