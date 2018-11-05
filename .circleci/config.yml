@@ -57,7 +57,7 @@ jobs:
       - save_cache:
           paths:
             - packages/explorer/build
-          key: built-explorer
+          key: built-explorer-{{ .BuildNum }}
 
   deploy-explorer:
     docker:
@@ -68,7 +68,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - built-explorer
+          - built-explorer-{{ .BuildNum }}
       - run:
           name: Install awscli
           command: sudo pip install awscli
