@@ -76,7 +76,7 @@ jobs:
       - run:
           name: Deploy to S3
           command: |
-            aws s3 rm s3://staging-livepeer-development/ --recursive
+            aws s3 rm s3://staging-livepeer-deployment/ --recursive
             aws s3 sync packages/explorer/build s3://staging-livepeer-deployment \
             --delete \
             --grants read=uri=http://staging-livepeer-deployment.s3-website.us-east-1.amazonaws.com/
