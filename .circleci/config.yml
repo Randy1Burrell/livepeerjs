@@ -38,7 +38,7 @@ jobs:
             yarn coverage
             ./cc-test-reporter after-build
 
-  build-explorer:
+  build-explorer-staging:
     docker:
       - image: circleci/node:8.11
     working_directory: ~/repo
@@ -59,7 +59,7 @@ jobs:
             - packages/explorer/build
           key: built-explorer-{{ .Revision }}
 
-  deploy-explorer:
+  deploy-explorer-staging:
     docker:
       - image: circleci/python:2.7-jessie
     working_directory: ~/repo
@@ -86,15 +86,15 @@ workflows:
   test-build-deploy:
     jobs:
       - build
-      - build-explorer:
+      - build-explorer-staging:
           requires:
             - build
           filters:
             branches:
               only: master
-      - deploy-explorer:
+      - deploy-explorer-staging:
           requires:
-            - build-explorer
+            - build-explorer-staging
           filters:
             branches:
               only: master
