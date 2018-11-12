@@ -145,16 +145,13 @@ workflows:
           filters:
             branches:
               only: master
-  production-test-build-deploy:
-    jobs:
-      - build-test:
-          filters:
-            branches:
-              only: master
       - hold-production:
           type: approval
           requires:
             - build-test
+          filters:
+            branches:
+              only: master
       - build-explorer-production:
           type: approval
           requires:
