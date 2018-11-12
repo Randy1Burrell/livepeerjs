@@ -5,7 +5,6 @@
 aliases:
   # Cache management
   - &save_depenendencies
-    - save_cache:
         paths:
           - node_modules
         key: v1-dependencies-{{ checksum "yarn.lock" }}
@@ -33,7 +32,7 @@ jobs:
           name: Install dependencies
           command: |
             yarn install
-      save_cache: *save_dependencies
+      - save_cache: *save_dependencies
       - run:
           name: Setup Code Climate test-reporter
           command: |
