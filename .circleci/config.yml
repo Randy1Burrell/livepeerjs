@@ -149,7 +149,7 @@ workflows:
           filters:
             branches:
               only: master
-      - build-explorer-production
+      - build-explorer-production:
           type: approval
           requires:
             - build-test
