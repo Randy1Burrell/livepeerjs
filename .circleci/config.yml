@@ -15,6 +15,9 @@ aliases:
   - &node
     - image: circleci/node:8.11
 
+  - &python
+    - image: circleci/python:2.7-jessie
+
 version: 2
 jobs:
   build-test:
@@ -51,7 +54,7 @@ jobs:
 
   build-explorer-staging:
     docker:
-      - image: circleci/node:8.11
+      *node
     working_directory: ~/repo
 
     steps:
@@ -72,7 +75,7 @@ jobs:
 
   deploy-explorer-staging:
     docker:
-      - image: circleci/python:2.7-jessie
+      *python
     working_directory: ~/repo
 
     steps:
