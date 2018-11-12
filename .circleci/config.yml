@@ -59,6 +59,28 @@ jobs:
             - packages/explorer/build
           key: built-explorer-{{ .Revision }}
 
+  deploy-explorer-staging:
+    docker:
+      - image: circleci/python:2.7-jessie
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - built-explorer-{{ .Revision }}
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+
+      - run:
+          name: Deploy to S3
+          command: |
+            aws s3 rm s3://staging-livepeer-deployment/ --recursive
+            aws s3 sync packages/explorer/build s3://$STAGING_BUCKET_NAME \
+            --delete \
+            --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+
   build-explorer-production:
     docker:
       - image: circleci/node:8.11
@@ -102,43 +124,30 @@ jobs:
             --delete \
             --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 
-  deploy-explorer-staging:
-    docker:
-      - image: circleci/python:2.7-jessie
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - built-explorer-{{ .Revision }}
-      - run:
-          name: Install awscli
-          command: sudo pip install awscli
-
-      - run:
-          name: Deploy to S3
-          command: |
-            aws s3 rm s3://staging-livepeer-deployment/ --recursive
-            aws s3 sync packages/explorer/build s3://$STAGING_BUCKET_NAME \
-            --delete \
-            --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
-
 workflows:
   version: 2
   test-build-deploy:
     jobs:
       - build-test
-      - build-explorer-staging:
+      - hold-staging:
           type: approval
+      - build-explorer-staging:
           requires:
-            - build-test
-          filters:
-            branches:
-              only: master
+            - hold-staging
+              #          filters:
+              #            branches:
+              #              only: master
       - deploy-explorer-staging:
           requires:
             - build-explorer-staging
           filters:
             branches:
               only: master
+      - build-explorer-production
+          type: approval
+          requires:
+            - build-test
+          filters:
+            branches:
+              only
+
