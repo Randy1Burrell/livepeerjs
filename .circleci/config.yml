@@ -21,6 +21,11 @@ aliases:
       curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       chmod +x ./cc-test-reporter
 
+  - &tests
+    name: Run tests
+    command: |
+      yarn test
+
   # Containers
   - &node
     - image: circleci/node:8.11
@@ -48,9 +53,7 @@ jobs:
       - run:
           *reporter
       - run:
-          name: Run tests
-          command: |
-            yarn test
+          *tests
       - run:
           name: Report coverage
           command: |
