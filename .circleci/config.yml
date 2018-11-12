@@ -66,6 +66,11 @@ aliases:
       export CI=false
       yarn build
 
+  # Installs AWS cli
+  - &install-aws-cli
+    name: Install awscli
+    command: sudo pip install awscli
+
   # Containers
   - &node
     - image: circleci/node:8.11
@@ -110,8 +115,6 @@ jobs:
       - checkout
       - restore_cache: *restore-explorer
       - run:
-          name: Install awscli
-          command: sudo pip install awscli
 
       - run:
           name: Deploy to S3
@@ -127,14 +130,7 @@ jobs:
 
     steps:
       - checkout
-      - run:
-          name: Build explorer
-          command: |
-            yarn
-            cd packages/explorer
-            ls -la
-            export CI=false
-            yarn build
+      - run: *build-explorer
 
       - save_cache:
           paths:
@@ -150,7 +146,7 @@ jobs:
       - restore_cache:
           keys:
           - built-explorer-{{ .Revision }}
-      - run:
+      - run: *install-aws-cli
           name: Install awscli
           command: sudo pip install awscli
 
@@ -167,6 +163,8 @@ workflows:
   staging-test-build-deploy:
     jobs:
       - build-test
+
+      # Staging workflow for the explorer
       - hold-staging-explorer-deploy:
           type: approval
           requires:
@@ -174,15 +172,11 @@ workflows:
       - build-explorer-staging:
           requires:
             - hold-staging-explorer-deploy
-          filters:
-            branches:
-              only: master
       - deploy-explorer-staging:
           requires:
             - build-explorer-staging
-          filters:
-            branches:
-              only: master
+
+      # Production workflow for the explorer
       - hold-production-explorer-deploy:
           type: approval
           requires:
