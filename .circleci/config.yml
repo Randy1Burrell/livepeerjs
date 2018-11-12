@@ -3,6 +3,14 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 aliases:
+  # Cache management
+  - &save_depenendencies
+    - save_cache:
+        paths:
+          - node_modules
+        key: v1-dependencies-{{ checksum "yarn.lock" }}
+
+  # Containers
   - &node
     docker:
       - image: circleci/node:8.11
@@ -23,10 +31,7 @@ jobs:
           name: Install dependencies
           command: |
             yarn install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "yarn.lock" }}
+      <<: *save_dependencies
       - run:
           name: Setup Code Climate test-reporter
           command: |
