@@ -123,6 +123,9 @@ jobs:
             aws s3 sync packages/explorer/build s3://$STAGING_BUCKET_NAME \
             --delete \
             --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+  hold-stgaing:
+    steps:
+      - checkout
 
 workflows:
   version: 2
