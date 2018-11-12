@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  build-test:
     docker:
       - image: circleci/node:8.11
     working_directory: ~/repo
@@ -59,6 +59,49 @@ jobs:
             - packages/explorer/build
           key: built-explorer-{{ .Revision }}
 
+  build-explorer-production:
+    docker:
+      - image: circleci/node:8.11
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run:
+          name: Build explorer
+          command: |
+            yarn
+            cd packages/explorer
+            ls -la
+            export CI=false
+            yarn build
+
+      - save_cache:
+          paths:
+            - packages/explorer/build
+          key: production-explorer-{{ .Revision }}
+
+  deploy-explorer-production:
+    docker:
+      - image: circleci/python:2.7-jessie
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - built-explorer-{{ .Revision }}
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+
+      - run:
+          name: Deploy to S3
+          command: |
+            aws s3 rm s3://staging-livepeer-deployment/ --recursive
+            aws s3 sync packages/explorer/build s3://$STAGING_BUCKET_NAME \
+            --delete \
+            --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+
   deploy-explorer-staging:
     docker:
       - image: circleci/python:2.7-jessie
@@ -85,10 +128,11 @@ workflows:
   version: 2
   test-build-deploy:
     jobs:
-      - build
+      - build-test
       - build-explorer-staging:
+          type: approval
           requires:
-            - build
+            - build-test
           filters:
             branches:
               only: master
