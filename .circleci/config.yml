@@ -124,9 +124,9 @@ jobs:
             --delete \
             --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 
-            #  hold-stgaing:
-            #    steps:
-            #      - checkout
+  hold-staging:
+    steps:
+      - checkout
 
 workflows:
   version: 2
@@ -140,9 +140,9 @@ workflows:
       - build-explorer-staging:
           requires:
             - hold-staging
-              #          filters:
-              #            branches:
-              #              only: master
+          filters:
+            branches:
+              only: master
       - deploy-explorer-staging:
           requires:
             - build-explorer-staging
