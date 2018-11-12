@@ -26,6 +26,11 @@ aliases:
     command: |
       yarn test
 
+  - &install-dependencies
+    name: Install dependencies
+    command: |
+      yarn install
+
   # Containers
   - &node
     - image: circleci/node:8.11
@@ -36,24 +41,16 @@ aliases:
 version: 2
 jobs:
   build-test:
-    docker:
-      *node
+    docker: *node
     working_directory: ~/repo
 
     steps:
       - checkout
-      - restore_cache:
-          *restore-dependencies
-      - run:
-          name: Install dependencies
-          command: |
-            yarn install
-      - save_cache:
-          *save-dependencies
-      - run:
-          *reporter
-      - run:
-          *tests
+      - restore_cache: *restore-dependencies
+      - run: *install-dependencies
+      - save_cache: *save-dependencies
+      - run: *reporter
+      - run: *tests
       - run:
           name: Report coverage
           command: |
