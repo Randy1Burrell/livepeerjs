@@ -23,6 +23,12 @@ aliases:
   - &python
     - image: circleci/python:2.7-jessie
 
+reporter: &reporter
+  - run:
+      name: Setup Code Climate test-reporter
+      command: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
 version: 2
 jobs:
   build-test:
@@ -40,11 +46,7 @@ jobs:
             yarn install
       - save_cache:
           *save-dependencies
-      - run:
-          name: Setup Code Climate test-reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
+      <<: *reporter
       - run:
           name: Run tests
           command: |
