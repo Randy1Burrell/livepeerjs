@@ -31,6 +31,21 @@ aliases:
     command: |
       yarn install
 
+  - &show-test-report
+    name: Report coverage
+    command: |
+      yarn coverage
+      ./cc-test-reporter after-build
+
+  - &build-explorer
+    name: Build explorer
+    command: |
+      yarn
+      cd packages/explorer
+      ls -la
+      export CI=false
+      yarn build
+
   # Containers
   - &node
     - image: circleci/node:8.11
@@ -38,6 +53,8 @@ aliases:
   - &python
     - image: circleci/python:2.7-jessie
 
+directory: &directory
+  working_directory: ~/repo
 version: 2
 jobs:
   build-test:
@@ -51,27 +68,15 @@ jobs:
       - save_cache: *save-dependencies
       - run: *reporter
       - run: *tests
-      - run:
-          name: Report coverage
-          command: |
-            yarn coverage
-            ./cc-test-reporter after-build
+      - run: *show-test-report
 
   build-explorer-staging:
-    docker:
-      *node
-    working_directory: ~/repo
+    docker: *node
+    <<: *directory
 
     steps:
       - checkout
-      - run:
-          name: Build explorer
-          command: |
-            yarn
-            cd packages/explorer
-            ls -la
-            export CI=false
-            yarn build
+      - run: *build-explorer
 
       - save_cache:
           paths:
