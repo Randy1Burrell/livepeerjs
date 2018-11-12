@@ -5,15 +5,15 @@
 aliases:
   # Cache management
   - &save-dependencies
-        paths:
-          - node_modules
-        key: v1-dependencies-{{ checksum "yarn.lock" }}
+    paths:
+      - node_modules
+    key: v1-dependencies-{{ checksum "yarn.lock" }}
 
   # Commands
 
   # Containers
   - &node
-      - image: circleci/node:8.11
+    - image: circleci/node:8.11
 
 version: 2
 jobs:
