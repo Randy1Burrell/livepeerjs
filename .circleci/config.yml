@@ -86,11 +86,11 @@ aliases:
 directory: &directory
   working_directory: ~/repo
 
-python-env: &python
+python-env: &python-env
   docker: *python
   <<: *directory
 
-node-env: &node
+node-env: &node-env
   docker: *node
   <<: *directory
 
