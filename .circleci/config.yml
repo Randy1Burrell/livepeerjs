@@ -4,7 +4,7 @@
 #
 aliases:
   # Cache management
-  - &save_depenendencies
+  - &save_dependencies
         paths:
           - node_modules
         key: v1-dependencies-{{ checksum "yarn.lock" }}
