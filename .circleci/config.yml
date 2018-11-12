@@ -128,7 +128,7 @@ workflows:
   version: 2
   staging-test-build-deploy:
     jobs:
-      - build-test:
+      - build-test
       - hold-staging:
           type: approval
           requires:
