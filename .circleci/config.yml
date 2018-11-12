@@ -147,8 +147,6 @@ jobs:
           keys:
           - built-explorer-{{ .Revision }}
       - run: *install-aws-cli
-          name: Install awscli
-          command: sudo pip install awscli
 
       - run:
           name: Deploy to S3
