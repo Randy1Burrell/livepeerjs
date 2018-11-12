@@ -2,11 +2,15 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
+aliases:
+  - &node
+    docker:
+      - image: circleci/node:8.11
+
 version: 2
 jobs:
   build-test:
-    docker:
-      - image: circleci/node:8.11
+    <<: *node
     working_directory: ~/repo
 
     steps:
@@ -129,13 +133,13 @@ workflows:
   staging-test-build-deploy:
     jobs:
       - build-test
-      - hold-staging:
+      - hold-staging-explorer-deploy:
           type: approval
           requires:
             - build-test
       - build-explorer-staging:
           requires:
-            - hold-staging
+            - hold-staging-explorer-deploy
           filters:
             branches:
               only: master
@@ -145,7 +149,7 @@ workflows:
           filters:
             branches:
               only: master
-      - hold-production:
+      - hold-production-explorer-deploy:
           type: approval
           requires:
             - build-test
@@ -153,9 +157,14 @@ workflows:
             branches:
               only: master
       - build-explorer-production:
-          type: approval
           requires:
-            - hold-production
+            - hold-production-explorer-deploy
+          filters:
+            branches:
+              only: master
+      - deploy-explorer-production:
+          requires:
+            - build-explorer-production:
           filters:
             branches:
               only: master
