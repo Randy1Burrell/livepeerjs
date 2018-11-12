@@ -4,39 +4,59 @@
 #
 aliases:
   # Cache management
+  #
+  # Saves dependencies to cache
   - &save-dependencies
     paths:
       - node_modules
     key: v1-dependencies-{{ checksum "yarn.lock" }}
 
+  # Restores dependencies from cache
   - &restore-dependencies
     keys:
     - v1-dependencies-{{ checksum "yarn.lock" }}
     - v1-dependencies-
 
+  # Saves built explorer to cache
+  - &save-explorer
+    paths:
+      - packages/explorer/build
+    key: built-explorer-{{ .Revision }}
+
+  # Restores explorer from cache
+  - &restore-explorer
+    keys:
+    - built-explorer-{{ .Revision }}
+
   # Commands
+
+  # Downloads and setup Code Climate reporter
   - &reporter
     name: Setup Code Climate test-reporter
     command: |
       curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       chmod +x ./cc-test-reporter
 
+  # Runs LivepeerJs tests
   - &tests
     name: Run tests
     command: |
       yarn test
 
+  # Installs dependencies for packages
   - &install-dependencies
     name: Install dependencies
     command: |
       yarn install
 
+  # Runs reporter and shows test coverage
   - &show-test-report
     name: Report coverage
     command: |
       yarn coverage
       ./cc-test-reporter after-build
 
+  # Builds the explorer
   - &build-explorer
     name: Build explorer
     command: |
@@ -55,11 +75,12 @@ aliases:
 
 directory: &directory
   working_directory: ~/repo
+
 version: 2
 jobs:
   build-test:
     docker: *node
-    working_directory: ~/repo
+    <<: *directory
 
     steps:
       - checkout
@@ -76,23 +97,18 @@ jobs:
 
     steps:
       - checkout
+      - restore_cache: *restore-dependencies
       - run: *build-explorer
-
-      - save_cache:
-          paths:
-            - packages/explorer/build
-          key: built-explorer-{{ .Revision }}
+      - save_cache: *save-explorer
 
   deploy-explorer-staging:
     docker:
       *python
-    working_directory: ~/repo
+    <<: *directory
 
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - built-explorer-{{ .Revision }}
+      - restore_cache: *restore-explorer
       - run:
           name: Install awscli
           command: sudo pip install awscli
@@ -100,15 +116,14 @@ jobs:
       - run:
           name: Deploy to S3
           command: |
-            aws s3 rm s3://staging-livepeer-deployment/ --recursive
+            aws s3 rm s3://$STAGING_BUCKET_NAME --recursive
             aws s3 sync packages/explorer/build s3://$STAGING_BUCKET_NAME \
             --delete \
             --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 
   build-explorer-production:
-    docker:
-      - image: circleci/node:8.11
-    working_directory: ~/repo
+    docker: *node
+    <<: *directory
 
     steps:
       - checkout
@@ -127,9 +142,8 @@ jobs:
           key: production-explorer-{{ .Revision }}
 
   deploy-explorer-production:
-    docker:
-      - image: circleci/python:2.7-jessie
-    working_directory: ~/repo
+    docker: *python
+    <<: *directory
 
     steps:
       - checkout
